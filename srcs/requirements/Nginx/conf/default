@@ -1,0 +1,32 @@
+events {}
+
+http{
+server {
+		listen 443 ssl;
+		listen [::]:443 ssl;
+	
+  		server_name maquentr.42.fr;
+
+  		root /var/www/html/;
+  		index index.php index.html index.htm;
+
+		ssl on;
+		ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_certificate /etc/nginx/ssl/services.pem;
+        ssl_certificate_key /etc/nginx/ssl/services.key;		
+		
+	location / {
+		autoindex on;
+		try_files $uri $uri/ =404;
+	}
+
+    location ~ \.php$ {
+        fastcgi_split_path_info	^(.+\.php)(/.+)$;
+        fastcgi_pass			wordpress:9000;
+        fastcgi_index			index.php;
+        include					fastcgi_params;
+        fastcgi_param			SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		try_files				$uri /index.php =404;
+    }
+	}
+}
